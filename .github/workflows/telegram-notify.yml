@@ -1,6 +1,11 @@
-name: Telegram Notification
+name: Telegram Repository Notifier - All Branches
 
-on: [push]
+on:
+  push:
+    branches-ignore: [] 
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
 
 jobs:
   notify:
@@ -12,7 +17,29 @@ jobs:
           to: -4824189443
           token: 7210260007:AAGrcAbUcygZyxNVKXh4eZGOG7Ny-jFYtPE
           message: |
-            New code pushed to ${{ github.repository }}
-            By: ${{ github.actor }}
-            Commit: ${{ github.event.head_commit.message }}
-            View: ${{ github.event.head_commit.url }}
+            📢 *Repository Activity* 📢
+
+            🏷 *Repository*: [${{ github.repository }}](https://github.com/${{ github.repository }})
+
+            🔀 *Event Type*: ${{ github.event_name }}
+
+            👤 *Triggered By*: ${{ github.actor }}
+
+            🌿 *Branch*: \`${{ github.ref }}\` (${{
+              github.ref_type == 'branch' && 'Branch' ||
+              github.ref_type == 'tag' && 'Tag' ||
+              github.ref_type
+            }})
+
+            ${{ github.event.head_commit && format('📝 *Commit Message*: {0}', github.event.head_commit.message) || '' }}
+
+            ${{ github.event.pull_request && format('🔖 *PR Title*: {0}', github.event.pull_request.title) || '' }}
+
+            🔗 *View*: ${{ 
+              github.event_name == 'push' && format('[Commit]({0})', github.event.head_commit.url) ||
+              github.event_name == 'pull_request' && format('[Pull Request]({0})', github.event.pull_request.html_url) ||
+              format('[Action]({0}/{1}/actions/runs/{2})', github.server_url, github.repository, github.run_id)
+            }}
+
+            ⏱ *Timestamp*: ${{ format('{0}', github.event.head_commit.timestamp) }}
+          parse_mode: "markdown"
