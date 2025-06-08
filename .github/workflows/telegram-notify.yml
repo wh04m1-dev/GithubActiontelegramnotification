@@ -1,0 +1,18 @@
+name: Telegram Notification
+
+on: [push]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: -4824189443
+          token: 7210260007:AAGrcAbUcygZyxNVKXh4eZGOG7Ny-jFYtPE
+          message: |
+            New code pushed to ${{ github.repository }}
+            By: ${{ github.actor }}
+            Commit: ${{ github.event.head_commit.message }}
+            View: ${{ github.event.head_commit.url }}
